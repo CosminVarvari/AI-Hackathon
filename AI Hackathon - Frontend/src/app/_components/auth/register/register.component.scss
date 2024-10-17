@@ -1,0 +1,75 @@
+@import "./../../../../assets/styles/variables.scss";
+
+.register-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1s;
+  width: 50%;
+  background-color: $white;
+  padding: 40px;
+  border-radius: 10px;
+  animation: slideIn 0.5s ease-out;
+  color: $primary-grey;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  h1 {
+    font-size: 32px;
+    line-height: 40px;
+    margin-bottom: 20px;
+  }
+
+  .back-button {
+    position: absolute;
+    top: 40px;
+    left: 20px;
+    color: $primary-grey;
+  }
+
+  .custom-form-field {
+    width: 100%;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+
+    .submit-button {
+      width: auto;
+      padding: 10px 60px;
+      background-color: $primary-grey;
+      color: $white;
+      transition: transform 0.3s;
+      font-size: 14px;
+      border-radius: 22px;
+      text-transform: uppercase;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}

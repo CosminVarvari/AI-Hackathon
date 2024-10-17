@@ -1,0 +1,52 @@
+@import "./assets/styles/variables.scss";
+
+html,
+body {
+  height: 100%;
+}
+body {
+  color: $primary-grey;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 22px;
+  transition: transform 0.3s;
+  font-size: 14px;
+  letter-spacing: 0;
+  background-color: $secondary-red;
+  color: $white;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+h1 {
+  font-family: $title-font;
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 60px;
+  margin: 0px;
+  padding: 0px;
+}
+
+h3 {
+  font-family: $title-font;
+  text-transform: uppercase;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 400;
+  margin: 0px;
+  padding: 0px;
+}
+
+p {
+  font-family: $regular-font;
+  font-size: 14px;
+  line-height: 18px;
+  margin: 0px;
+  padding: 0px;
+}
