@@ -131,5 +131,3 @@ LOGOUT_REDIRECT_URL = "login-user"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-OPENAI_API_KEY = 'sk-dxZ21bnDQC_qVx-G73MdfTfKQi5Sw9gMnYQJYIXu0JT3BlbkFJLXkpHdYw_9a7BnjxIJx99nO0eLtfehnqXt43zK3hQA'
