@@ -7,7 +7,6 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import requests
 
-openai.api_key = 'sk-dxZ21bnDQC_qVx-G73MdfTfKQi5Sw9gMnYQJYIXu0JT3BlbkFJLXkpHdYw_9a7BnjxIJx99nO0eLtfehnqXt43zK3hQA'  # Use a secure method to store your API key
 
 def detect_language(text):
     lang, _ = langid.classify(text)
