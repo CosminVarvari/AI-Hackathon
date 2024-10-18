@@ -1,27 +1,19 @@
 import textwrap
-# from streamlit_webrtc import webrtc_streamer, WebRtcMode, ClientSettings
-import pydub
 import streamlit as st
 import openai
 import langid
 from gtts import gTTS
 from PIL import Image, ImageDraw, ImageFont
 import random
-# import os
 import requests
-import tempfile
 
-# Set your OpenAI API key here
-openai.api_key = 'sk-dxZ21bnDQC_qVx-G73MdfTfKQi5Sw9gMnYQJYIXu0JT3BlbkFJLXkpHdYw_9a7BnjxIJx99nO0eLtfehnqXt43zK3hQA'
+openai.api_key = 'sk-dxZ21bnDQC_qVx-G73MdfTfKQi5Sw9gMnYQJYIXu0JT3BlbkFJLXkpHdYw_9a7BnjxIJx99nO0eLtfehnqXt43zK3hQA'  # Use a secure method to store your API key
 
-
-# Function to detect language
 def detect_language(text):
     lang, _ = langid.classify(text)
     return lang
 
 
-# Function to translate text to a specified language using OpenAI
 def translate_text(text, target_language):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -30,7 +22,6 @@ def translate_text(text, target_language):
     return response.choices[0].message['content']
 
 
-# Function to generate response from chatbot using OpenAI
 def generate_response(text, target_language):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -39,23 +30,18 @@ def generate_response(text, target_language):
     return response.choices[0].message['content']
 
 
-# Function to explain how to write in a specified language
 def explain_writing(text, language):
     prompt = f"How do I write '{text}' in {language}?"
     return generate_response(prompt, language)
 
 
-# Function to generate pronunciation audio in the selected language
 def generate_pronunciation(text, language):
-    # Translate text to the selected pronunciation language
     translated_text = translate_text(text, language)
     tts = gTTS(text=translated_text, lang=language)
     filename = f"pronunciation_{random.randint(1000, 9999)}.mp3"
     tts.save(filename)
     return filename
 
-
-# Function to generate a meme using OpenAI's image generation
 def generate_meme_caption(keywords):
     prompt = f"Generate a funny, creative meme caption based on these keywords: {', '.join(keywords)}"
     response = openai.ChatCompletion.create(
@@ -66,7 +52,6 @@ def generate_meme_caption(keywords):
 
 
 def generate_meme_image(keywords):
-    # Generate image based on keywords using DALL·E
     prompt = f"A meme image based on these keywords: {', '.join(keywords)}"
     response = openai.Image.create(
         prompt=prompt,
@@ -77,31 +62,24 @@ def generate_meme_image(keywords):
     image_url = response['data'][0]['url']
     img = Image.open(requests.get(image_url, stream=True).raw)
 
-    # Generate creative meme caption
     caption = generate_meme_caption(keywords)
 
-    # Prepare the drawing context
     draw = ImageDraw.Draw(img)
     image_width, image_height = img.size
 
-    # Load font and adjust size
     try:
-        font = ImageFont.truetype("arial.ttf", 20)  # Ensure the font file is available
+        font = ImageFont.truetype("arial.ttf", 20)
     except IOError:
-        font = ImageFont.load_default()  # Fallback to default font
+        font = ImageFont.load_default()
 
-    # Wrap text to fit within the image width
-    max_width = image_width - 40  # Padding on both sides
-    wrapped_text = textwrap.fill(caption, width=30)  # Adjust width according to image size
-
-    # Measure text size to calculate position
+    max_width = image_width - 40
+    wrapped_text = textwrap.fill(caption, width=30)
     text_bbox = draw.textbbox((0, 0), wrapped_text, font=font)
     text_width = text_bbox[2] - text_bbox[0]
     text_height = text_bbox[3] - text_bbox[1]
-    x = (image_width - text_width) // 2  # Center horizontally
-    y = image_height - text_height - 20  # Position near the bottom
+    x = (image_width - text_width) // 2
+    y = image_height - text_height - 20
 
-    # Add shadow to the text for better readability
     shadow_color = "black"
     shadow_offset = 3
     draw.text((x - shadow_offset, y - shadow_offset), wrapped_text, font=font, fill=shadow_color)
@@ -109,40 +87,29 @@ def generate_meme_image(keywords):
     draw.text((x - shadow_offset, y + shadow_offset), wrapped_text, font=font, fill=shadow_color)
     draw.text((x + shadow_offset, y + shadow_offset), wrapped_text, font=font, fill=shadow_color)
 
-    # Draw main text
     text_color = "white"
     draw.text((x, y), wrapped_text, font=font, fill=text_color)
 
-    # Save and return the filename
     filename = f"meme_{random.randint(1000, 9999)}.jpg"
     img.save(filename)
     return filename
 
 
-def convert_audio_to_text(audio_file):
-    # Convert the audio file to the correct format if necessary
-    sound = pydub.AudioSegment.from_file(audio_file)
-    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_audio:
-        sound.export(temp_audio.name, format="mp3")
-
-        # Transcribe audio using OpenAI Whisper API
-        with open(temp_audio.name, "rb") as audio:
-            transcript = openai.Audio.transcribe("whisper-1", audio)
-
-    return transcript['text']
+def translate_document(file, target_language):
+    lines = []
+    for line in file:
+        translated_line = translate_text(line.strip(), target_language)
+        lines.append(translated_line)
+    return lines
 
 
-# Streamlit App
 st.title("ProfessorX Chatbot")
 
-# Language Selection Dropdown (for responses and pronunciation)
 languages = {"English": "en", "Spanish": "es", "French": "fr", "German": "de", "Chinese": "zh", "Romanian": "ro"}
-response_language = st.selectbox("Select response/pronunciation language:", list(languages.keys()))
-target_language_code = languages[response_language]
 
-# Tabs for different features
+
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    ["Chat with ProfessorX", "How to Write", "Pronunciation", "Meme Generator", "Talk with ProfessorX"])
+    ["Chat with ProfessorX", "How to Write", "Pronunciation", "Meme Generator", "Let ProfessorX help you"])
 
 with tab1:
     st.subheader("Talk to ProfessorX")
@@ -151,7 +118,7 @@ with tab1:
         if user_input:
             detected_language = detect_language(user_input)
             st.write(f"Detected Language: {detected_language}")
-            response = generate_response(user_input, target_language_code)
+            response = generate_response(user_input, detected_language)
             st.write(f"ProfessorX: {response}")
 
 with tab2:
@@ -164,6 +131,8 @@ with tab2:
             st.write(f"ProfessorX: {explanation}")
 
 with tab3:
+    response_language = st.selectbox("Select response/pronunciation language:", list(languages.keys()))
+    target_language_code = languages[response_language]
     st.subheader("Pronunciation")
     text_to_pronounce = st.text_input("Enter the text you want pronounced:")
     if st.button("Generate Pronunciation"):
@@ -181,19 +150,14 @@ with tab4:
             meme_file = generate_meme_image(keywords)
             st.image(meme_file)
             st.write(f"Meme generated! You can find it in the file: {meme_file}")
+
 with tab5:
-    st.subheader("Voice Input")
-
-    # Allow user to upload an audio file for processing
-    uploaded_file = st.file_uploader("Upload your voice recording", type=["mp3", "wav", "ogg"])
-
-    if uploaded_file is not None:
-        # Convert uploaded audio to text
-        user_voice_input = convert_audio_to_text(uploaded_file)
-        st.write(f"You said: {user_voice_input}")
-
-        # Generate response from ProfessorX based on the voice input
-        detected_language = detect_language(user_voice_input)
-        st.write(f"Detected Language: {detected_language}")
-        response = generate_response(user_voice_input, target_language_code)
-        st.write(f"ProfessorX: {response}")
+    st.subheader("Let ProfessorX Help You with Subtitles")
+    uploaded_file = st.file_uploader("Upload a text file with subtitles:", type=["txt"])
+    if uploaded_file:
+        target_language_for_subtitles = st.selectbox("Select language for translation:", list(languages.keys()))
+        if st.button("Translate Subtitles"):
+            translated_subtitles = translate_document(uploaded_file, languages[target_language_for_subtitles])
+            st.write("Translated Subtitles:")
+            for line in translated_subtitles:
+                st.write(line)
